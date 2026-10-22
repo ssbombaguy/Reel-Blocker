@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="18dp"
+        android:paddingTop="28dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="32dp">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:text="@string/app_name"
+                android:textColor="@color/text"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/status_pill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="12dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="5dp"
+                android:textColor="@color/bg"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Hero: status ring + master switch -->
+        <LinearLayout
+            style="@style/Card"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"
+            android:paddingTop="28dp">
+
+            <FrameLayout
+                android:id="@+id/ring"
+                android:layout_width="132dp"
+                android:layout_height="132dp"
+                android:background="@drawable/bg_ring_on">
+
+                <ImageView
+                    android:id="@+id/shield"
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_shield" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/status_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/text"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/status_sub"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="@color/text_dim"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="22dp"
+                android:background="@color/card_stroke" />
+
+            <LinearLayout
+                android:id="@+id/toggle_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CardTitle"
+                        android:text="Block Instagram Reels" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reels tab, feed, Explore and DMs"
+                        android:textColor="@color/text_dim"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <Switch
+                    android:id="@+id/toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/switch_thumb"
+                    android:trackTint="@color/switch_track"
+                    android:trackTintMode="src_over" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Setup: only while the accessibility service is off -->
+        <LinearLayout
+            android:id="@+id/setup_card"
+            style="@style/Card">
+
+            <TextView
+                style="@style/CardTitle"
+                android:text="⚠  One step left"
+                android:textColor="@color/warn" />
+
+            <TextView
+                style="@style/Body"
+                android:layout_marginTop="8dp"
+                android:text="Android needs you to switch ReelBlock on once.\n\n1. Tap the button below\n2. Open Downloaded apps → ReelBlock\n3. Turn it on and tap Allow" />
+
+            <Button
+                android:id="@+id/setup_button"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_button"
+                android:fontFamily="sans-serif-medium"
+                android:stateListAnimator="@null"
+                android:text="Open Accessibility settings"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- Stats -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <LinearLayout style="@style/StatTile">
+
+                <TextView
+                    android:id="@+id/stat_today"
+                    style="@style/StatNumber" />
+
+                <TextView
+                    style="@style/StatLabel"
+                    android:text="today" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="0dp" />
+
+            <LinearLayout style="@style/StatTile">
+
+                <TextView
+                    android:id="@+id/stat_week"
+                    style="@style/StatNumber" />
+
+                <TextView
+                    style="@style/StatLabel"
+                    android:text="this week" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="0dp" />
+
+            <LinearLayout style="@style/StatTile">
+
+                <TextView
+                    android:id="@+id/stat_total"
+                    style="@style/StatNumber" />
+
+                <TextView
+                    style="@style/StatLabel"
+                    android:text="all time" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Time saved + chart -->
+        <LinearLayout style="@style/Card">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/CardTitle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="Last 7 days" />
+
+                <TextView
+                    android:id="@+id/time_saved"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/good"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <com.reelblock.WeekChart
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="14dp" />
+        </LinearLayout>
+
+        <!-- Keep alive on MIUI and other aggressive battery savers -->
+        <LinearLayout style="@style/Card">
+
+            <TextView
+                style="@style/CardTitle"
+                android:text="Keep it running" />
+
+            <TextView
+                style="@style/Body"
+                android:layout_marginTop="8dp"
+                android:text="Some phones (Xiaomi, Oppo, Samsung) stop background apps. In ReelBlock's app settings set Battery saver → No restrictions and turn on Autostart. In Recents, lock ReelBlock so “clear all” skips it." />
+
+            <Button
+                android:id="@+id/app_settings_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_button_outline"
+                android:fontFamily="sans-serif-medium"
+                android:stateListAnimator="@null"
+                android:text="Open app settings"
+                android:textAllCaps="false"
+                android:textColor="@color/text"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.3"
+            android:text="ReelBlock only reads Instagram's screen.\nNo internet access, nothing leaves your phone.\nTime saved assumes about 2 minutes per Reel."
+            android:textColor="@color/text_dim"
+            android:textSize="12sp" />
+    </LinearLayout>
+</ScrollView>

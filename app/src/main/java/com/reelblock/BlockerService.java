@@ -24,7 +24,7 @@ public class BlockerService extends AccessibilityService {
     private static final String ID_PREFIX = IG + ":id/";
 
     /** Wait for a burst of events to settle before looking at the screen. */
-    private static final long SETTLE_MS = 120;
+    private static final long SETTLE_MS = 60;
     /** Give Instagram time to react to one action before trying the next. */
     private static final long ACTION_GAP_MS = 700;
     /** Blocks closer together than this count as "Back didn't work". */
