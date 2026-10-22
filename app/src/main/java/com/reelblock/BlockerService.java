@@ -1,13 +1,13 @@
 package com.reelblock;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -29,14 +29,12 @@ public class BlockerService extends AccessibilityService {
     private static final long ACTION_GAP_MS = 700;
     /** Blocks closer together than this count as "Back didn't work". */
     private static final long STRIKE_WINDOW_MS = 2500;
-    private static final long TOAST_GAP_MS = 4000;
     private static final int MAX_DEPTH = 40;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable check = this::checkScreen;
 
     private long lastActionAt;
-    private long lastToastAt;
     private int strikes;
 
     @Override
@@ -73,21 +71,20 @@ public class BlockerService extends AccessibilityService {
         lastActionAt = now;
         Log.d(TAG, "Reels detected via " + hit + ", strike " + strikes);
 
-        // Back usually works. On the Reels tab itself Back can be a no-op, so
-        // then switch to the Home tab, and as a last resort leave Instagram.
+        // Get Instagram off Reels first, so "Back to Instagram" on our screen
+        // lands on the feed: on the Reels tab switch to Home, anywhere else
+        // (feed, DMs) press Back. Then cover it with the blocked screen.
+        // If we see Reels again right away, something failed: leave Instagram.
         if (strikes == 1) {
             Prefs.countBlock(this);
-            performGlobalAction(GLOBAL_ACTION_BACK);
-        } else if (strikes == 2 && clickById(root, "feed_tab")) {
-            Log.d(TAG, "Switched to Home tab");
+            if (!(isSelected(root, "clips_tab") && clickById(root, "feed_tab"))) {
+                performGlobalAction(GLOBAL_ACTION_BACK);
+            }
+            startActivity(new Intent(this, BlockedActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else {
             performGlobalAction(GLOBAL_ACTION_HOME);
             strikes = 0;
-        }
-
-        if (now - lastToastAt > TOAST_GAP_MS) {
-            lastToastAt = now;
-            Toast.makeText(this, "Reels blocked", Toast.LENGTH_SHORT).show();
         }
         // Check again in case the action didn't take us out.
         handler.postDelayed(check, ACTION_GAP_MS);
@@ -111,6 +108,13 @@ public class BlockerService extends AccessibilityService {
             if (hit != null) return hit;
         }
         return null;
+    }
+
+    private boolean isSelected(AccessibilityNodeInfo root, String name) {
+        for (AccessibilityNodeInfo n : root.findAccessibilityNodeInfosByViewId(ID_PREFIX + name)) {
+            if (n.isSelected()) return true;
+        }
+        return false;
     }
 
     private boolean clickById(AccessibilityNodeInfo root, String name) {

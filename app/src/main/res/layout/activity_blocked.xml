@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="28dp">
+
+    <FrameLayout
+        android:id="@+id/blocked_ring"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/bg_ring_on">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="🛑"
+            android:textSize="56sp" />
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Reels blocked"
+        android:textColor="@color/text"
+        android:textSize="32sp" />
+
+    <TextView
+        android:id="@+id/blocked_line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.25"
+        android:textColor="@color/text_dim"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal">
+
+        <LinearLayout style="@style/StatTile">
+
+            <TextView
+                android:id="@+id/blocked_today"
+                style="@style/StatNumber" />
+
+            <TextView
+                style="@style/StatLabel"
+                android:text="blocked today" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="0dp" />
+
+        <LinearLayout style="@style/StatTile">
+
+            <TextView
+                android:id="@+id/blocked_saved"
+                style="@style/StatNumber"
+                android:textColor="@color/good" />
+
+            <TextView
+                style="@style/StatLabel"
+                android:text="saved today" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/go_home"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/bg_button"
+        android:fontFamily="sans-serif-medium"
+        android:stateListAnimator="@null"
+        android:text="Go do something else"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/back_to_ig"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_button_outline"
+        android:fontFamily="sans-serif-medium"
+        android:stateListAnimator="@null"
+        android:text="Back to Instagram feed"
+        android:textAllCaps="false"
+        android:textColor="@color/text_dim"
+        android:textSize="15sp" />
+</LinearLayout>

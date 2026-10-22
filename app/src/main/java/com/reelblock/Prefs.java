@@ -1,46 +1,35 @@
 package com.reelblock;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.Bundle;
 
 import java.time.LocalDate;
 
-/** Settings and block counts shared by the screen and the service. */
+/** Settings and block counts, shared across processes via {@link PrefsProvider}. */
 final class Prefs {
-    private static final String FILE = "reelblock";
-    private static final String KEY_ENABLED = "enabled";
-    private static final String KEY_BLOCKED = "blocked_count";
-    /** Per-day counts are stored as "day_2026-10-22". */
-    private static final String DAY_PREFIX = "day_";
-
     private Prefs() {}
 
-    private static SharedPreferences get(Context c) {
-        return c.getSharedPreferences(FILE, Context.MODE_PRIVATE);
+    private static Bundle call(Context c, String method, String arg) {
+        return c.getContentResolver().call(PrefsProvider.URI, method, arg, null);
     }
 
     static boolean enabled(Context c) {
-        return get(c).getBoolean(KEY_ENABLED, true);
+        return call(c, "enabled", null).getBoolean(PrefsProvider.VALUE);
     }
 
     static void setEnabled(Context c, boolean on) {
-        get(c).edit().putBoolean(KEY_ENABLED, on).apply();
+        call(c, "setEnabled", String.valueOf(on));
     }
 
     static int blockedCount(Context c) {
-        return get(c).getInt(KEY_BLOCKED, 0);
+        return call(c, "total", null).getInt(PrefsProvider.VALUE);
     }
 
     static int blockedOn(Context c, LocalDate day) {
-        return get(c).getInt(DAY_PREFIX + day, 0);
+        return call(c, "day", day.toString()).getInt(PrefsProvider.VALUE);
     }
 
     static void countBlock(Context c) {
-        SharedPreferences p = get(c);
-        String today = DAY_PREFIX + LocalDate.now();
-        p.edit()
-                .putInt(KEY_BLOCKED, p.getInt(KEY_BLOCKED, 0) + 1)
-                .putInt(today, p.getInt(today, 0) + 1)
-                .apply();
+        call(c, "countBlock", LocalDate.now().toString());
     }
 }

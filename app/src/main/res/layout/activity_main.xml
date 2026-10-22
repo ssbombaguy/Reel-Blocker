@@ -132,14 +132,14 @@
             style="@style/Card">
 
             <TextView
+                android:id="@+id/setup_title"
                 style="@style/CardTitle"
-                android:text="⚠  One step left"
                 android:textColor="@color/warn" />
 
             <TextView
+                android:id="@+id/setup_body"
                 style="@style/Body"
-                android:layout_marginTop="8dp"
-                android:text="Android needs you to switch ReelBlock on once.\n\n1. Tap the button below\n2. Open Downloaded apps → ReelBlock\n3. Turn it on and tap Allow" />
+                android:layout_marginTop="8dp" />
 
             <Button
                 android:id="@+id/setup_button"

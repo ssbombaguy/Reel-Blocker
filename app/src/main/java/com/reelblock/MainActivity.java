@@ -1,6 +1,7 @@
 package com.reelblock;
 
 import android.app.Activity;
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -28,7 +30,7 @@ import java.util.Locale;
 
 public class MainActivity extends Activity {
     /** Rough length of one Reels session avoided, for the "time saved" line. */
-    private static final int MINUTES_PER_BLOCK = 2;
+    static final int MINUTES_PER_BLOCK = 2;
     /** How long the "Pause" button stays locked, so pausing isn't a reflex. */
     private static final int PAUSE_DELAY_S = 5;
 
@@ -41,6 +43,8 @@ public class MainActivity extends Activity {
     private ImageView shield;
     private Switch toggle;
     private View setupCard;
+    private TextView setupTitle;
+    private TextView setupBody;
     private TextView statToday;
     private TextView statWeek;
     private TextView statTotal;
@@ -69,6 +73,8 @@ public class MainActivity extends Activity {
         shield = findViewById(R.id.shield);
         toggle = findViewById(R.id.toggle);
         setupCard = findViewById(R.id.setup_card);
+        setupTitle = findViewById(R.id.setup_title);
+        setupBody = findViewById(R.id.setup_body);
         statToday = findViewById(R.id.stat_today);
         statWeek = findViewById(R.id.stat_week);
         statTotal = findViewById(R.id.stat_total);
@@ -90,16 +96,31 @@ public class MainActivity extends Activity {
     }
 
     private void refresh() {
-        boolean serviceOn = isServiceEnabled();
+        boolean switchedOn = isServiceSwitchedOn();
+        boolean running = isServiceRunning();
         boolean on = Prefs.enabled(this);
 
         toggle.setOnCheckedChangeListener(null);
         toggle.setChecked(on);
         toggle.setOnCheckedChangeListener(onToggle);
-        setupCard.setVisibility(serviceOn ? View.GONE : View.VISIBLE);
+        setupCard.setVisibility(running ? View.GONE : View.VISIBLE);
 
-        if (!serviceOn) {
+        if (!switchedOn) {
+            setupTitle.setText("⚠  One step left");
+            setupBody.setText("Android needs you to switch ReelBlock on once.\n\n"
+                    + "1. Tap the button below\n"
+                    + "2. Open Downloaded apps → ReelBlock\n"
+                    + "3. Turn it on and tap Allow");
             showStatus("SETUP", R.color.warn, "Not active yet", "Finish the setup below", false);
+        } else if (!running) {
+            // Switched on in settings, but the phone killed it and Android
+            // won't restart it by itself.
+            setupTitle.setText("⚠  Your phone stopped ReelBlock");
+            setupBody.setText("It needs a quick restart.\n\n"
+                    + "1. Tap the button below\n"
+                    + "2. Open Downloaded apps → ReelBlock\n"
+                    + "3. Turn it off, then on again");
+            showStatus("STOPPED", R.color.warn, "Not running", "Restart it below", false);
         } else if (on) {
             showStatus("ON", R.color.good, "You're protected", "Reels close the moment they open", true);
         } else {
@@ -184,18 +205,30 @@ public class MainActivity extends Activity {
         return Math.round(v * getResources().getDisplayMetrics().density);
     }
 
-    private static String formatMinutes(int minutes) {
+    static String formatMinutes(int minutes) {
         if (minutes < 60) return minutes + " min";
         return (minutes / 60) + "h " + (minutes % 60) + "m";
     }
 
-    private boolean isServiceEnabled() {
+    /** Whether the user turned the service on in Accessibility settings. */
+    private boolean isServiceSwitchedOn() {
         String enabled = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
         if (TextUtils.isEmpty(enabled)) return false;
         ComponentName me = new ComponentName(this, BlockerService.class);
         for (String s : enabled.split(":")) {
             if (me.equals(ComponentName.unflattenFromString(s))) return true;
+        }
+        return false;
+    }
+
+    /** Whether the system actually has the service bound right now. */
+    private boolean isServiceRunning() {
+        AccessibilityManager am = getSystemService(AccessibilityManager.class);
+        String me = new ComponentName(this, BlockerService.class).flattenToString();
+        for (AccessibilityServiceInfo info :
+                am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) {
+            if (me.equals(ComponentName.unflattenFromString(info.getId()).flattenToString())) return true;
         }
         return false;
     }
