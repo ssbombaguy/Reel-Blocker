@@ -1,10 +1,12 @@
 package com.reelblock;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +14,8 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -131,19 +135,32 @@ public class MainActivity extends Activity {
 
     /** Pausing is allowed, but only after a few seconds of second thoughts. */
     private void confirmPause() {
-        AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle("Pause ReelBlock?")
-                .setMessage("Reels will play again until you turn it back on.")
-                .setNegativeButton("Keep blocking", null)
-                .setPositiveButton("Pause", (d, w) -> {
-                    Prefs.setEnabled(this, false);
-                    refresh();
-                })
-                .create();
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_pause);
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setLayout(getResources().getDisplayMetrics().widthPixels - 2 * dp(24),
+                WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setDimAmount(0.75f);
+
+        int blocked = Prefs.blockedOn(this, LocalDate.now());
+        TextView message = dialog.findViewById(R.id.pause_message);
+        message.setText(blocked > 0
+                ? "You've dodged " + blocked + (blocked == 1 ? " Reel" : " Reels")
+                        + " today.\nReels will play again until you turn it back on."
+                : "Reels will play again until you turn it back on.");
+
+        Button pause = dialog.findViewById(R.id.pause_button);
+        dialog.findViewById(R.id.keep_button).setOnClickListener(v -> dialog.dismiss());
+        pause.setOnClickListener(v -> {
+            Prefs.setEnabled(this, false);
+            dialog.dismiss();
+            refresh();
+        });
+        pause.setEnabled(false);
         dialog.show();
 
-        Button pause = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        pause.setEnabled(false);
         Runnable tick = new Runnable() {
             int left = PAUSE_DELAY_S;
 
@@ -151,15 +168,20 @@ public class MainActivity extends Activity {
             public void run() {
                 if (!dialog.isShowing()) return;
                 if (left == 0) {
-                    pause.setText("Pause");
+                    pause.setText("Pause anyway");
+                    pause.setTextColor(getColor(R.color.text));
                     pause.setEnabled(true);
                     return;
                 }
-                pause.setText("Pause (" + left-- + ")");
+                pause.setText("Pause in " + left-- + "…");
                 handler.postDelayed(this, 1000);
             }
         };
         tick.run();
+    }
+
+    private int dp(int v) {
+        return Math.round(v * getResources().getDisplayMetrics().density);
     }
 
     private static String formatMinutes(int minutes) {
