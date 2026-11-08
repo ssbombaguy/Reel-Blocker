@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ReelBlock</string>
-    <string name="service_description">Closes Instagram Reels as soon as they open. ReelBlock only looks at Instagram\'s screen, stores nothing and sends nothing anywhere.</string>
+    <string name="service_description">Closes Instagram Reels as soon as they open and blocks adult sites in Chrome. ReelBlock only looks at Instagram\'s screen and Chrome\'s address bar, stores nothing and sends nothing anywhere.</string>
 </resources>
